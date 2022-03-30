@@ -4,12 +4,15 @@ from pydantic import BaseModel, EmailStr
 class UserSchema(BaseModel):
     user_id: int
 
-    class Config:
-        orm_mode = True
-
 
 class UserIn(BaseModel):
     email: EmailStr
+    first_name: str
+
+
+class UserUpdate(UserSchema):
+    first_name: str
+    last_name: str
 
 
 class UserOut(UserSchema):
@@ -17,8 +20,3 @@ class UserOut(UserSchema):
 
     class Config:
         orm_mode = True
-
-
-class UserUpdate(UserSchema):
-    first_name: str
-    last_name: str

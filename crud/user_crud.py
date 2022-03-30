@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from crud.common import catch_exception
 from models import User
-from schemas.user_schemas import UserUpdate
+from schemas.user_schemas import UserUpdate, UserIn
 
 
 @catch_exception
@@ -31,14 +31,14 @@ async def get_user_by_email(db_session: Session, user_email: str) -> User:
 
 
 @catch_exception
-async def add_user(db_session: Session, user_email: str) -> User:
+async def add_user(db_session: Session, user: UserIn) -> User:
     """
     Method to add new user to db
+    :param user:
     :param db_session:
-    :param user_email:
     :return:
     """
-    new_user = User(email=user_email)
+    new_user = User(email=user.email, first_name=user.first_name)
     db_session.add(new_user)
     db_session.commit()
     db_session.refresh(new_user)
@@ -50,12 +50,12 @@ async def update_user(db_session: Session, user_data: UserUpdate) -> User:
     """
     Method to update user info (first name and last name)
     :param db_session:
-    :param user_data:
+    :param user_data: new user information
     :return:
     """
     db_session.execute(update(User)
-                       .where(User.user_id == UserUpdate.user_id)
-                       .values(first_name=UserUpdate.first_name,
-                               last_name=UserUpdate.last_name))
+                       .where(User.user_id == user_data.user_id)
+                       .values(first_name=user_data.first_name,
+                               last_name=user_data.last_name))
     db_session.commit()
-    return await get_user_by_id(user_id=UserUpdate.user_id)
+    return await get_user_by_id(user_id=user_data.user_id)

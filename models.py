@@ -31,8 +31,6 @@ class Survey(Base):
     survey_id = Column(Integer, primary_key=True, index=True)
     description = Column(String)
 
-    questions = relationship('Question', backref='survey')
-
 
 class Question(Base):
     """
@@ -43,9 +41,8 @@ class Question(Base):
 
     question_id = Column(Integer, primary_key=True, index=True)
     text = Column(String, nullable=False)
-    survey_id = Column(Integer, ForeignKey('survey.id', name='fk_question_survey'))
+    survey_id = Column(Integer, ForeignKey('survey.survey_id', name='fk_question_survey', ondelete='CASCADE'))
 
-    answers = relationship('Answer')
     survey = relationship('Survey', backref=backref('questions', lazy='dynamic'))
 
 
@@ -57,7 +54,6 @@ class Answer(Base):
 
     answer_id = Column(Integer, primary_key=True, index=True)
     answer_text = Column(String, nullable=False)
-    question_id = Column(Integer, ForeignKey('question.id', name='fk_answer_question'))
+    question_id = Column(Integer, ForeignKey('question.question_id', name='fk_answer_question', ondelete='CASCADE'))
 
-    question = relationship('Question', backref=backref('answers', lazy='dyncamic'))
-
+    question = relationship('Question', backref=backref('answers', lazy='dynamic'))

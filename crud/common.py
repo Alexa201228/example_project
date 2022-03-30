@@ -17,11 +17,13 @@ def get_db():
 
 def catch_exception(func):
     @wraps(func)
-    async def wrapper(db_session: Session = Depends(get_db), *args, **kwargs):
+    async def wrapper(db_session: Session, *args, **kwargs):
         try:
-            result = await func(db_session, *args, **kwargs)
+            result = await func(db_session=db_session, *args, **kwargs)
             return result
         except Exception as e:
             logging.error(str(e))
             db_session.rollback()
             raise e
+
+    return wrapper
